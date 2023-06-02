@@ -1,12 +1,11 @@
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { tw } from "twind";
-import { TextInput } from "../../ui/atoms/Text-Input";
-import { Button } from "../../ui/atoms/Button";
-import { axiosInstance } from "../../configs/axios.config";
-import { isEqual } from "lodash-es";
 import { enqueueSnackbar } from "notistack";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { tw } from "twind";
 import { useGlobalContext } from "../../GlobalContext";
+import { axiosInstance } from "../../configs/axios.config";
+import { Button } from "../../ui/atoms/Button";
+import { TextInput } from "../../ui/atoms/Text-Input";
 
 const Login = () => {
   const {

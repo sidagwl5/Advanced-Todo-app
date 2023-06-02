@@ -1,3 +1,4 @@
+import { enqueueSnackbar } from "notistack";
 import {
   ReactNode,
   createContext,
@@ -82,10 +83,19 @@ export const GlobalContext = ({ children }: { children: ReactNode }) => {
 
   const addTodo = (value: ITodo) => {
     setTodos((prev) => prev.concat(value));
+    enqueueSnackbar({
+      variant: "success",
+      message: "Todo added successfully",
+    });
   };
 
   const deleteTodo = (id: string) => {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
+
+    enqueueSnackbar({
+      variant: "success",
+      message: "Todo deleted successfully",
+    });
   };
 
   const completeTodo = (id: string) => {
@@ -102,6 +112,11 @@ export const GlobalContext = ({ children }: { children: ReactNode }) => {
         })),
       });
       return newArray;
+    });
+
+    enqueueSnackbar({
+      variant: "success",
+      message: "Todo marked check!",
     });
   };
 
@@ -120,6 +135,11 @@ export const GlobalContext = ({ children }: { children: ReactNode }) => {
       });
       return newArray;
     });
+
+    enqueueSnackbar({
+      variant: "success",
+      message: "Todo marked unchecked",
+    });
   };
 
   const updateTodo = (id: string, value: Partial<ITodo>) => {
@@ -133,6 +153,11 @@ export const GlobalContext = ({ children }: { children: ReactNode }) => {
         done: (value.subtasks ?? []).every((subtask) => subtask.done),
       });
       return newArray;
+    });
+
+    enqueueSnackbar({
+      variant: "success",
+      message: "Todo updated successfully",
     });
   };
 

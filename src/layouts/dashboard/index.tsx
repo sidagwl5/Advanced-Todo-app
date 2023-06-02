@@ -1,13 +1,12 @@
-import { tw } from "twind";
 import { CircularProgress, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Navbar } from "./components/Navbar";
-import { Sidebar } from "./components/Sidebar";
 import { Outlet, useNavigate } from "react-router-dom";
+import { tw } from "twind";
 import { useGlobalContext } from "../../GlobalContext";
 import { axiosInstance } from "../../configs/axios.config";
 import { Button } from "../../ui/atoms/Button";
-import Footer from "./components/Footer";
+import { Navbar } from "./components/Navbar";
+import { Sidebar } from "./components/Sidebar";
 
 const DashboardLayout = () => {
   const {
