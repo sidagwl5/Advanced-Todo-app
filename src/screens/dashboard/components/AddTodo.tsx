@@ -6,22 +6,13 @@ import {
   DialogTitle,
   IconButton,
 } from "@mui/material";
-import { useMemo } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { tw } from "twind";
-import { Button } from "../../../ui/atoms/Button";
-import { TextInput } from "../../../ui/atoms/Text-Input";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
-const moduleBase = {
-  key_name: "",
-  description: "",
-  default_value: "",
-  max: "",
-  min: "",
-  required: false,
-};
+import { tw } from "twind";
+import { ITodo, useGlobalContext } from "../../../GlobalContext";
+import { Button } from "../../../ui/atoms/Button";
+import { TextInput } from "../../../ui/atoms/Text-Input";
 
 const modules = {
   toolbar: [
@@ -52,93 +43,30 @@ const formats = [
   "image",
 ];
 
-export const AddTodo = ({ close, data }: any) => {
-  const { control, handleSubmit, getValues } = useForm({
+export const AddTodo = ({
+  close,
+  data,
+}: {
+  close: () => void;
+  data?: ITodo;
+}) => {
+  const {
+    handleTodos: { addTodo },
+  } = useGlobalContext();
+  const { control, handleSubmit } = useForm({
     defaultValues: data ?? {
       name: "",
       description: "",
-      family: "A",
-      group: "",
-      elements: [moduleBase],
+      id: crypto.randomUUID(),
+      subtasks: [],
+      done: false,
     },
   });
 
-  const addIndicatorFields = useMemo(
-    () => [
-      {
-        name: "key_name",
-        placeholder: "Enter key name",
-        // rules: {
-        //   required: { value: true, message: "Key name required" },
-        // },
-      },
-      {
-        name: "description",
-        placeholder: "Enter description",
-        // rules: {
-        //   required: { value: true, message: "Description required" },
-        // },
-      },
-      {
-        name: "default_value",
-        placeholder: "Enter default value",
-        type: "number",
-        rules: (idx: number) => ({
-          // required: { value: true, message: "Default value required" },
-          validate: (value) => {
-            if (
-              Number(value) < Number(getValues(`elements.${idx}.min`)) ||
-              Number(value) > Number(getValues(`elements.${idx}.max`))
-            ) {
-              return "Default value should be between min and max";
-            }
-
-            return true;
-          },
-        }),
-      },
-      {
-        name: "max",
-        placeholder: "Enter max",
-        type: "number",
-        rules: (idx: number) => ({
-          // required: { value: true, message: "Max value required" },
-          deps: [`elements.${idx}.min`, `elements.${idx}.default_value`],
-          validate: (value) => {
-            if (Number(value) < Number(getValues(`elements.${idx}.min`))) {
-              return "Max cannot be smaller than min";
-            }
-
-            return true;
-          },
-        }),
-      },
-      {
-        name: "min",
-        placeholder: "Enter min",
-        type: "number",
-        rules: (idx: number) => ({
-          // required: { value: true, message: "Min value required" },
-          deps: [`elements.${idx}.max`, `elements.${idx}.default_value`],
-          validate: (value) => {
-            if (Number(value) > Number(getValues(`elements.${idx}.max`))) {
-              return "Min cannot be bigger than max";
-            }
-
-            return true;
-          },
-        }),
-      },
-    ],
-    []
-  );
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "elements",
-  });
-
-  const onSubmit = (payload: any) => {};
+  const onSubmit: SubmitHandler<ITodo> = (payload) => {
+    addTodo(payload);
+    close();
+  };
 
   const isLoading = false;
 
@@ -157,11 +85,7 @@ export const AddTodo = ({ close, data }: any) => {
         )}
       >
         {data ? "Edit" : "Add"} Todo(s)
-        <IconButton
-          onClick={(e) => {
-            close();
-          }}
-        >
+        <IconButton onClick={close}>
           <CloseIcon className={tw("text-black")} />
         </IconButton>
       </DialogTitle>
@@ -190,7 +114,7 @@ export const AddTodo = ({ close, data }: any) => {
         <Controller
           control={control}
           name={"description"}
-          render={({ field, fieldState: { error } }) => (
+          render={({ field }) => (
             <div className={tw("h-[220px] flex flex-col gap-2")}>
               <label
                 className={tw("text-sm text-[#303030] font-medium mr-auto")}

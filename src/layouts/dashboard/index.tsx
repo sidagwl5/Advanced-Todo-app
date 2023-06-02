@@ -1,64 +1,83 @@
 import { tw } from "twind";
-import { Stack } from "@mui/material";
-import { useState } from "react";
+import { CircularProgress, Stack } from "@mui/material";
+import { useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { Sidebar } from "./components/Sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../../GlobalContext";
+import { axiosInstance } from "../../configs/axios.config";
+import { Button } from "../../ui/atoms/Button";
+import Footer from "./components/Footer";
 
 const DashboardLayout = () => {
-  const { isConnected } = { isConnected: true };
+  const {
+    handleUser: [user, setUser],
+  } = useGlobalContext();
+  const [loading, setLoading] = useState(true);
   const [sidebar, setSidebar] = useState(true);
+  const navigate = useNavigate();
 
-  const isEligible = isConnected;
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token)
+      axiosInstance
+        .get("/user/dummy-auth", { headers: { Authorization: token } })
+        .then(({ data }) => {
+          setUser(data);
+        })
+        .finally(() => setLoading(false));
+    else setLoading(false);
+  }, [setUser]);
+
+  const isEligible = Boolean(user);
 
   return (
     <section className={tw("w-full flex flex-col relative h-screen")}>
-      <Navbar handleSidebar={[sidebar, setSidebar]} />
+      {isEligible ? (
+        <>
+          <Navbar handleSidebar={[sidebar, setSidebar]} />
 
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        position={"relative"}
-        flex={1}
-      >
-        <Sidebar active={sidebar} />
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            position={"relative"}
+            flex={1}
+          >
+            <Sidebar active={sidebar} />
 
-        <div
-          className={tw(
-            "flex flex-col flex-1 overflow-hidden min-w-0 bg-[#f9f9f9] p-4 md:p-6 gap-8"
-          )}
-        >
-          {isEligible ? (
-            <Outlet />
-          ) : (
             <div
               className={tw(
-                "w-full flex-col gap-3 h-full justify-center items-center flex"
+                "flex flex-col flex-1 overflow-hidden min-w-0 bg-[#f9f9f9] p-4 md:p-6 gap-8"
               )}
             >
-              <p className={tw("opacity-90 text-center")}>
-                {!isConnected ? (
-                  <>
-                    Please connect your
-                    <span className={tw("font-medium")}> WEB-3</span> account to
-                    access content.
-                  </>
-                ) : (
-                  <>
-                    Your address is not a{" "}
-                    <span className={tw("font-medium")}>whitelisted</span>{" "}
-                    address.
-                    <br />
-                    Please use a{" "}
-                    <span className={tw("font-medium")}>different</span> account
-                    to access the content.
-                  </>
-                )}
-              </p>
+              <Outlet />
             </div>
+          </Stack>
+        </>
+      ) : (
+        <div
+          className={tw(
+            "w-full flex-col gap-3 h-full justify-center items-center flex"
+          )}
+        >
+          {loading ? (
+            <>
+              <CircularProgress size={24} className={tw("text-gray-500!")} />
+              <p className={tw("opacity-90 text-center")}>Authenticating...</p>
+            </>
+          ) : (
+            <>
+              <p className={tw("opacity-90 text-center")}>
+                Please
+                <span className={tw("font-medium")}> Login</span> to access
+                content.
+              </p>
+              <Button onClick={() => navigate("/login")}>Login</Button>
+            </>
           )}
         </div>
-      </Stack>
+      )}
     </section>
   );
 };

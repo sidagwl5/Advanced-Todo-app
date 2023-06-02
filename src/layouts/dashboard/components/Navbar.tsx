@@ -1,36 +1,28 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { IconButton, useMediaQuery } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { tw } from "twind";
 import { UserPopup } from "./UserPopup";
 
 const MenuOptions = () => {
-  return (
-    <>
-      <div className="notification">
-        <NotificationsIcon />
-      </div>
-      <UserPopup />
-    </>
-  );
+  return <UserPopup />;
 };
 
 export const Navbar = ({ handleSidebar = [] }: any) => {
   const [sidebar, setSidebar] = handleSidebar;
-  const isMobile = useMediaQuery("(max-width:1024px)");
+  const isTablet = useMediaQuery("(max-width:1023.50px)");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setOpen(isMobile);
-  }, [isMobile]);
+    setOpen(isTablet);
+  }, [isTablet]);
 
   return (
-    <div className={tw("sticky shadow-md top-0 z-40 bg-white")}>
-      <div
+    <header className={tw("sticky border-b shadow-lg top-0 z-40 bg-white")}>
+      <section
         className={tw(
-          "max-w-[1440px] px-4 lg:px-7 h-14 w-full gap-[6vw] flex justify-between items-center mx-auto"
+          "px-4 lg:px-7 h-14 w-full gap-[6vw] flex justify-between items-center mx-auto"
         )}
       >
         {setSidebar && (
@@ -41,14 +33,7 @@ export const Navbar = ({ handleSidebar = [] }: any) => {
             <ChevronLeftIcon />
           </IconButton>
         )}
-        <div className="header-left">
-          {/* <Image
-              onClick={() => navigate.push("/")}
-              className={tw("cursor-pointer")}
-              src="./images/logo.png"
-              alt=""
-            /> */}
-        </div>
+        <div />
 
         <div
           onClick={setOpen.bind(this, !open)}
@@ -62,9 +47,9 @@ export const Navbar = ({ handleSidebar = [] }: any) => {
             <MenuOptions />
           </div>
         </div>
-      </div>
+      </section>
 
-      <div
+      <section
         className={tw(
           "relative w-full flex flex-col gap-3 overflow-hidden bg-white items-end px-4 lg:px-7 transition-all",
           !open ? "h-0" : "py-6"
@@ -73,7 +58,7 @@ export const Navbar = ({ handleSidebar = [] }: any) => {
         <div className={tw("flex items-center justify-end gap-6 flex-wrap")}>
           <MenuOptions />
         </div>
-      </div>
-    </div>
+      </section>
+    </header>
   );
 };

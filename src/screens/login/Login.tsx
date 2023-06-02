@@ -6,8 +6,12 @@ import { axiosInstance } from "../../configs/axios.config";
 import { isEqual } from "lodash-es";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../../GlobalContext";
 
 const Login = () => {
+  const {
+    handleUser: [_, setUser],
+  } = useGlobalContext();
   const navigate = useNavigate();
   const { control, handleSubmit } = useForm({
     defaultValues: { password: "", username: "" },
@@ -18,12 +22,12 @@ const Login = () => {
     username: string;
   }> = async (data) => {
     try {
-      const { data: eligibleUser } = await axiosInstance.get(
-        "/apis/login.json"
-      );
+      const {
+        data: { user, token },
+      } = await axiosInstance.post("/user/dummy-login", data);
 
-      if (!isEqual(data, eligibleUser)) throw new Error("Invalid credentials");
-      // localStorage.setItem("token", token);
+      localStorage.setItem("token", token);
+      setUser(user);
 
       enqueueSnackbar({
         variant: "success",
@@ -35,8 +39,8 @@ const Login = () => {
       enqueueSnackbar({
         variant: "error",
         message:
-          error.message ??
           error.response?.data?.message ??
+          error.message ??
           "Something went wrong!",
       });
     }

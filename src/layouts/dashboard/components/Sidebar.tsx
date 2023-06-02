@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { tw } from "twind";
 import NotesIcon from "@mui/icons-material/Notes";
+import Footer from "./Footer";
 
 const adminOptions = [
   {
@@ -43,6 +44,10 @@ export const Sidebar = ({ active }: any) => {
       )}
     >
       <DashboardBoardOptions />
+
+      <div className={tw("mt-auto")}>
+        <Footer />
+      </div>
     </div>
   );
 };

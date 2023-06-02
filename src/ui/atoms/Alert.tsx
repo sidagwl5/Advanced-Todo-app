@@ -1,5 +1,8 @@
-import { forwardRef } from "react";
+import { useSnackbar } from "notistack";
+import { HTMLAttributes, forwardRef } from "react";
 import { css, style, tw } from "twind/style";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconButton } from "@mui/material";
 
 const notificationStyles = style({
   base: tw(
@@ -23,10 +26,27 @@ const notificationStyles = style({
   },
 });
 
-export const Alert = forwardRef(({ variant, message }, ref) => {
-  return (
-    <div ref={ref} className={tw(notificationStyles({ variant }))}>
-      {message}
-    </div>
-  );
-});
+interface IAlertProps extends HTMLAttributes<HTMLDivElement> {
+  variant: "success" | "info" | "error" | "warning";
+  message: string;
+}
+
+export const Alert = forwardRef<HTMLDivElement, IAlertProps>(
+  ({ variant, message, id }, ref) => {
+    const { closeSnackbar } = useSnackbar();
+
+    const clickHandler = () => {
+      closeSnackbar(id);
+    };
+
+    return (
+      <div ref={ref} className={tw(notificationStyles({ variant }))}>
+        {message}
+
+        <IconButton onClick={clickHandler}>
+          <CloseIcon className={tw("text-white text-xl!")} />
+        </IconButton>
+      </div>
+    );
+  }
+);
