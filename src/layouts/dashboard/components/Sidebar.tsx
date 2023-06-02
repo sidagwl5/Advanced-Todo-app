@@ -7,7 +7,7 @@ const adminOptions = [
   {
     title: "Todos",
     icon: <NotesIcon className={tw("!text-xl")} />,
-    link: "/dashboard",
+    link: "/",
   },
 ];
 

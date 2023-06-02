@@ -6,6 +6,7 @@ import { useGlobalContext } from "../../GlobalContext";
 import { axiosInstance } from "../../configs/axios.config";
 import { Button } from "../../ui/atoms/Button";
 import { TextInput } from "../../ui/atoms/Text-Input";
+import { useEffect } from "react";
 
 const Login = () => {
   const {
@@ -15,6 +16,12 @@ const Login = () => {
   const { control, handleSubmit } = useForm({
     defaultValues: { password: "", username: "" },
   });
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/");
+    }
+  }, []);
 
   const onLogin: SubmitHandler<{
     password: string;
@@ -33,7 +40,7 @@ const Login = () => {
         message: "Login successful",
       });
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       enqueueSnackbar({
         variant: "error",
